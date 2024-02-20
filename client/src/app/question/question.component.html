@@ -1,0 +1,14 @@
+<mat-accordion>
+	<mat-expansion-panel (opened)="openPanel()" (closed)="panelOpenState = false">
+		<mat-expansion-panel-header>
+				<mat-panel-title>
+						{{question?.text}}
+				</mat-panel-title>
+		</mat-expansion-panel-header>
+	<p *ngFor="let answer of answers$ | async">
+		{{answer.text}}
+	</p>
+	<app-input class="answer-input" (inputSubmitted)="addNewAnswer($event)"
+		label="Add Answer"></app-input>
+	</mat-expansion-panel>
+</mat-accordion>
