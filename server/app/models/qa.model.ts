@@ -78,7 +78,7 @@ class QaModel {
             };
 
             const response = await this.client.index({ index: QuestionIndex, body: document });
-            return document;
+            return Object.assign(document, {id:response._id});
         } catch (error) {
             throw error;
         }
@@ -155,8 +155,22 @@ class QaModel {
             const similarMessages: QuestionDocument[] = ans.hits.hits.map((hit: any) => hit._source);
             return similarMessages;
         } catch (error) {
-            throw error;
+            console.error(error)
+            return [];
         }
+    }
+
+    async deleteIndices(indeces: string[]) {
+        return this.client.indices.delete(
+            {
+                index: indeces
+            }
+        )
+        .then(_ => true)
+        .catch(error => {
+            console.error(error);
+            false
+        })
     }
 }
 

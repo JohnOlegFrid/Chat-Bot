@@ -1,14 +1,10 @@
-<div class="input-wrapper">
-  <mat-form-field class="input-field">
-    <mat-label>{{label}}</mat-label>
-    <input matInput type="text" [(ngModel)]="value" #inputField>
-      @if(value) {
-        <button matSuffix mat-icon-button aria-label="Clear" (click)="value=''">
-          <mat-icon>close</mat-icon>
-        </button>
-      }
-    <button mat-raised-button color="primary" [disabled]="value===''"
-      (click)="submitInput(inputField.value)">Submit</button>
-  </mat-form-field>
-  
+<div class="input-group mb-3">
+  <div class="form-floating">
+    <input [(ngModel)]="value" (keyup.enter)="submitInput(inputField.value)" type="text" class="form-control" id="inputField" placeholder="Username" #inputField>
+    <label for="inputField">{{label}}</label>
+  </div>
+  <button type="button" class="btn btn-primary" [disabled]="value===''"
+    (click)="submitInput(inputField.value)">
+    Submit
+  </button>
 </div>

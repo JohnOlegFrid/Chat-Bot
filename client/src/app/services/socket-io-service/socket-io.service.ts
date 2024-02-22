@@ -32,11 +32,11 @@ export class SocketIoService {
     })
 
     this.socket.on(NewQuestionPublished, (question: QuestionFromServer) => {
-      this.stateService.setQuestions([question]);
+      this.stateService.addOneQuestion(question);
     })
 
     this.socket.on(NewAnswerPublished, (answer: Answer) => {
-      this.stateService.setOneAnswer(answer);
+      this.stateService.addOneAnswer(answer);
     })
   }
 

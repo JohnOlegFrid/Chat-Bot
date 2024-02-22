@@ -2,7 +2,7 @@
 	<mat-expansion-panel (opened)="openPanel()" (closed)="panelOpenState = false">
 		<mat-expansion-panel-header>
 				<mat-panel-title>
-						{{question?.text}}
+						Q: {{question?.text}}
 				</mat-panel-title>
 		</mat-expansion-panel-header>
 	<p *ngFor="let answer of answers$ | async">

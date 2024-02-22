@@ -21,4 +21,8 @@ export class InputComponent {
   submitInput(question: string) {
     this.inputSubmitted.emit(question);
   }
+
+  clearValue() {
+    this.value = ''
+  }
 }

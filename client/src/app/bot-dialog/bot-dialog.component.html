@@ -1,0 +1,16 @@
+<mat-card class="bot-wrapper">
+    <mat-card-header class="">
+        <img mat-card-avatar src="../../assets/bot.webp" alt="Avatar" class="avatar">
+        <mat-card-subtitle class="bot-text">
+            Hey you! <br>
+            I see a similar question was asked already.<br>
+            Here are the answers we have for it.<br></mat-card-subtitle>
+        <br>
+        <mat-card-subtitle class="bot-answer" *ngFor="let answer of data">
+            {{answer.text}}<br>
+        </mat-card-subtitle>
+    </mat-card-header>
+    <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close>Close</button>
+    </mat-dialog-actions>
+</mat-card>

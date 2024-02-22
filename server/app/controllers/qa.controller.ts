@@ -16,10 +16,24 @@ export const getQuestions = async (req:Request, res: Response, next: NextFunctio
     next();
 }
 
+export const getAnswersToSimilarQuestions = async (req:Request, res: Response, next: NextFunction) => {
+    const text = req.query.text as string; 
+    const ans = await qaService.getAnswersToSimilarQuestions(text);
+    res.send(ans);
+    next();
+}
+
 export const postAnswersByQuestionId = async (req:Request, res: Response, next: NextFunction) => {
     const [qid, text] = req.params.body;
     const ans = await qaService.addAnswer(qid, text);
     
     res.send(ans);
+    next();
+}
+
+export const deleteIndices = async (req:Request, res: Response, next: NextFunction) => {
+    const indices = req.query.index;
+    const ans = await qaService.deleteIndices(indices as string[]);
+    res.send(ans).status(200);
     next();
 }

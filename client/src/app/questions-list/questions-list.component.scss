@@ -1,4 +1,8 @@
 .list-wrapper{
     display: flex;
     flex-direction: column;
+    padding: 0 1% 0 1%;
+    app-question{
+        margin-bottom:5%;
+    }
 }

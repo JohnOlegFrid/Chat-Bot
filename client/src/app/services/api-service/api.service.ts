@@ -16,7 +16,6 @@ export class ApiService {
   constructor(private http: HttpClient) { }
 
   getAnswersByQuestionId(questionsId: string){
-
     return this.http.get<Answer[]>(`${this.apiUrl}/answers/${questionsId}`).pipe(
       catchError((error) => {
         console.error('API Error:', error);
@@ -36,5 +35,14 @@ export class ApiService {
     ).subscribe(questions => {
       this.stateService.setQuestions(questions);
     })
+  }
+
+  getAnswersToSimilarQuestions(text: string){
+    return this.http.get<Answer[]>(`${this.apiUrl}/answers-to-similar-questions`,{params:{text}}).pipe(
+      catchError((error) => {
+        console.error('API Error:', error);
+        return throwError(() => new Error('Something went wrong. Please try again later.'));
+      })
+    )
   }
 }

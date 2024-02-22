@@ -14,3 +14,14 @@ export async function addAnswer(qid: string, text:string) {
     const ans = await qaModel.addAnswer(qid, text);
     return ans;
 }
+
+export async function getAnswersToSimilarQuestions(text:string){
+    const similarQuestions = await qaModel.findSimilarQuestions(text);
+    if (!similarQuestions.length) return null;
+    let answers = await qaModel.getAnswersForQuestion(similarQuestions[0].id!);
+    return answers;
+}
+
+export async function deleteIndices(indeces: string[]){
+    return qaModel.deleteIndices(indeces);
+}

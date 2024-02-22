@@ -53,11 +53,11 @@ export class StateService {
               value$: new BehaviorSubject<Answer[]>([])
           }
       }
-      this.answers$[qid].value$.next(this.answers$[qid].value$.value.concat(answers));
+      this.answers$[qid].value$.next(answers);
     }
   }
 
-  setOneAnswer(answer: Answer ) {
+  addOneAnswer(answer: Answer ) {
     const qid = answer.questionId;
     if (!this.answers$[qid]) {
         this.answers$[qid] = {
@@ -65,8 +65,19 @@ export class StateService {
             value$: new BehaviorSubject<Answer[]>([])
         }
     }
-    this.answers$[qid].value$.next(this.answers$[qid].value$.value.concat(answer));
+    this.answers$[qid].value$.next([answer].concat(this.answers$[qid].value$.value));
     
   }
+
+  addOneQuestion(question: QuestionFromServer ) {
+    if (!this.answers$[question.id]) {
+        this.answers$[question.id] = {
+          isLoading$:new BehaviorSubject<boolean>(false),
+          value$: new BehaviorSubject<Answer[]>([])
+        }
+    }
+    this.questions$.next([question].concat(this.questions$.value))
+  }
+
 
 }
