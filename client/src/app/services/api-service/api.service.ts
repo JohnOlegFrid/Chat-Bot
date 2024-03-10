@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'; 
 import { environment } from '../../../environments/environment';
-import { Answer, QuestionFromServer } from '../../general.interface';
+import { Reply, MessageFromServer } from '../../general.interface';
 import { catchError, throwError } from 'rxjs';
 import { StateService } from '../state-service/state.service';
 
@@ -15,8 +15,8 @@ export class ApiService {
   headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8').set('Access-Control-Allow-Origin','*');
   constructor(private http: HttpClient) { }
 
-  getAnswersByQuestionId(questionsId: string){
-    return this.http.get<Answer[]>(`${this.apiUrl}/answers/${questionsId}`).pipe(
+  getRepliesByMessageId(messagesId: string){
+    return this.http.get<Reply[]>(`${this.apiUrl}/replies/${messagesId}`).pipe(
       catchError((error) => {
         console.error('API Error:', error);
         return throwError(() => new Error('Something went wrong. Please try again later.'));
@@ -26,19 +26,19 @@ export class ApiService {
     })
   }
 
-  getQuestions(pageSize:number, pageNumber:number){
-    return this.http.get<QuestionFromServer[]>(`${this.apiUrl}/questions?pageSize=${pageSize}&pageNumber=${pageNumber}`).pipe(
+  getMessages(pageSize:number, pageNumber:number){
+    return this.http.get<MessageFromServer[]>(`${this.apiUrl}/messages?pageSize=${pageSize}&pageNumber=${pageNumber}`).pipe(
       catchError((error) => {
         console.error('API Error:', error);
         return throwError(() => new Error('Something went wrong. Please try again later.'));
       })
-    ).subscribe(questions => {
-      this.stateService.setQuestions(questions);
+    ).subscribe(messages => {
+      this.stateService.setMessages(messages);
     })
   }
 
-  getAnswersToSimilarQuestions(text: string){
-    return this.http.get<Answer[]>(`${this.apiUrl}/answers-to-similar-questions`,{params:{text}}).pipe(
+  getAnswersToSimilarMessages(text: string){
+    return this.http.get<Reply[]>(`${this.apiUrl}/replies-to-similar-message`,{params:{text}}).pipe(
       catchError((error) => {
         console.error('API Error:', error);
         return throwError(() => new Error('Something went wrong. Please try again later.'));

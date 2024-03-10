@@ -1,15 +1,16 @@
 import { Injectable, inject } from '@angular/core';
-import { io } from 'socket.io-client';
+import { Socket, io } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
 import { BehaviorSubject } from 'rxjs';
-import { Answer, Question, QuestionFromServer } from '../../general.interface';
+import { Reply, MessageFromServer, LocalStorage } from '../../general.interface';
 import { StateService } from '../state-service/state.service';
+import { IconOptions } from '@angular/material/icon';
 
-const NewQuestionChanel = 'addQuestion'
-const NewAnswerChanel = 'addAnswer'
-const GetQuestions = 'getQuestions'
-const NewQuestionPublished = 'newQuestionPublished'
-const NewAnswerPublished = 'newAnswerPublished'
+const NewMessageChanel = 'addMessage'
+const NewReplyChanel = 'addReplyToMessage'
+const GetMessages = 'getMessages'
+const NewMessagePublished = 'newMessagePublished'
+const NewReplyPublished = 'newReplyPublished'
 const PageSize = 20;
 
 @Injectable({
@@ -19,36 +20,39 @@ const PageSize = 20;
 
 
 export class SocketIoService {
-  private socket = io(environment.apiUrl,  { transports : ['websocket'] });
+  private socket!:Socket;
   stateService: StateService = inject(StateService);
 
-  questions$ = new BehaviorSubject<QuestionFromServer[]>([]);
-  answers$: Record<string, BehaviorSubject<Answer[]>> = {};
+  messages$ = new BehaviorSubject<MessageFromServer[]>([]);
+  answers$: Record<string, BehaviorSubject<Reply[]>> = {};
 
   constructor() {
-    this.socket.emit(GetQuestions,1, 20);
-    this.socket.on(GetQuestions, (questions: QuestionFromServer[]) => {
-      this.questions$.next(this.questions$.value.concat(questions));
-    })
-
-    this.socket.on(NewQuestionPublished, (question: QuestionFromServer) => {
-      this.stateService.addOneQuestion(question);
-    })
-
-    this.socket.on(NewAnswerPublished, (answer: Answer) => {
-      this.stateService.addOneAnswer(answer);
-    })
+    // this.socket.emit(GetMessages,1, 20);
+    // this.socket.on(GetMessages, (messages: MessageFromServer[]) => {
+    //   this.stateService.setMessages(messages)
+    // })
   }
 
-  addNewQuestion(text: string){
-    this.socket.emit(NewQuestionChanel, text);
+  connect() {
+    this.socket = io(environment.apiUrl,  { transports : ['websocket'], auth: {username: localStorage.getItem(LocalStorage.username)}})
+    
+    this.socket.on(NewMessagePublished, (message: MessageFromServer) => {
+      this.stateService.addOneMessage(message);
+    })
+
+    this.socket.on(NewReplyPublished, (reply: Reply) => {
+      this.stateService.addOneReply(reply);
+    })
+  }
+  addNewMessage(text: string){
+    this.socket.emit(NewMessageChanel, text);
   }
 
-  addNewAnswer(qid: string, text: string){
-    this.socket.emit(NewAnswerChanel, qid, text);
+  addNewReply(messageId: string, text: string){
+    this.socket.emit(NewReplyChanel, messageId, text);
   }
 
-  getQuestions(){
-    return this.questions$;
+  getMessages(){
+    return this.messages$;
   }
 }

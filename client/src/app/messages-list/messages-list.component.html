@@ -1,0 +1,3 @@
+<div #listWrapper class="list-wrapper accordion">
+    <app-message [className]="message.my?'my': 'other'" *ngFor="let message of messages$|async" [message] = "message"></app-message>
+</div>

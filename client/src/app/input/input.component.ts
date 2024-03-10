@@ -14,12 +14,12 @@ import {MatFormFieldModule} from '@angular/material/form-field';
   styleUrl: './input.component.scss'
 })
 export class InputComponent {
-  @ViewChild("input") newQuestionInput:any; 
+  @ViewChild("input") newmessageInput:any; 
   @Input() label = ''
   @Output() inputSubmitted = new EventEmitter<string>()
   value = '';
-  submitInput(question: string) {
-    this.inputSubmitted.emit(question);
+  submitInput(message: string) {
+    this.inputSubmitted.emit(message);
   }
 
   clearValue() {

@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import {MatCardModule} from '@angular/material/card';
-import { Answer } from '../general.interface';
+import { Reply } from '../general.interface';
 import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-bot-dialog',
@@ -14,6 +14,6 @@ import { CommonModule } from '@angular/common';
 export class BotDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<BotDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Answer[],    
+    @Inject(MAT_DIALOG_DATA) public data: Reply[],    
   ) {}
 }

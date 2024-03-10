@@ -1,4 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
-
+* {
+    box-sizing: border-box;
+}
+:root {
+    --message-other-color: #F1F1F1;
+    --message-my-color: rgba(195,232,250,1);
+    --date-color: gray;
+}
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

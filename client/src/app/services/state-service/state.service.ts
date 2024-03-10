@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
-import { Answer, QuestionFromServer } from '../../general.interface';
+import { Injectable, inject } from '@angular/core';
+import { Reply, MessageFromServer, LocalStorage } from '../../general.interface';
 import { BehaviorSubject } from 'rxjs';
+import { UtilsService } from '../utils-service/utils.service';
 
 export interface StateEntity<T> {
     isLoading$: BehaviorSubject<boolean>;
@@ -11,72 +12,75 @@ export interface StateEntity<T> {
   providedIn: 'root'
 })
 export class StateService {
-  questions$ = new BehaviorSubject<QuestionFromServer[]>([]);
-  answers$: Record<Answer['questionId'],StateEntity<Answer[]>> = {}
+  utilsService = inject(UtilsService);
+  messages$ = new BehaviorSubject<MessageFromServer[]>([]);
+  answers$: Record<Reply['replyToMessageId'],StateEntity<Reply[]>> = {}
   constructor() { }
 
-  setQuestions(questions: QuestionFromServer[] ) {
-    questions.forEach(question => {
-      if (!this.answers$[question.id]) {
-        this.answers$[question.id] = {
+  setMessages(messages: MessageFromServer[] ) {
+    messages.forEach(message => {
+      this.utilsService.setMyProperty(message);
+      if (!this.answers$[message.id]) {
+        this.answers$[message.id] = {
                 isLoading$:new BehaviorSubject<boolean>(false),
-                value$: new BehaviorSubject<Answer[]>([])
+                value$: new BehaviorSubject<Reply[]>([])
             }
         }
       })
-    this.questions$.next(this.questions$.value.concat(questions))
+    this.messages$.next(this.messages$.value.concat(messages))
   }
   
   
-  getQuestions() {
-    return this.questions$;
+  getMessages() {
+    return this.messages$;
   }
 
-  getAnswers(qid: Answer['questionId']) {
+  getAnswers(qid: Reply['replyToMessageId']) {
     return this.answers$[qid];
   }
 
 
-  setAnswers(answers: Answer[] ) {
-    const dict:Record<Answer['questionId'], Answer[]> = {};
+  setAnswers(answers: Reply[] ) {
+    const dict:Record<Reply['replyToMessageId'], Reply[]> = {};
     answers.forEach(answer=> {
-      if (!dict[answer.questionId]){
-        dict[answer.questionId] = [];
+      if (!dict[answer.replyToMessageId]){
+        dict[answer.replyToMessageId] = [];
       }
-      dict[answer.questionId].push(answer);
+      dict[answer.replyToMessageId].push(answer);
     });
 
     for (const [qid, answers] of Object.entries(dict)) {
       if (!this.answers$[qid]) {
           this.answers$[qid] = {
               isLoading$:new BehaviorSubject<boolean>(false),
-              value$: new BehaviorSubject<Answer[]>([])
+              value$: new BehaviorSubject<Reply[]>([])
           }
       }
       this.answers$[qid].value$.next(answers);
     }
   }
 
-  addOneAnswer(answer: Answer ) {
-    const qid = answer.questionId;
+  addOneReply(answer: Reply ) {
+    const qid = answer.replyToMessageId;
     if (!this.answers$[qid]) {
         this.answers$[qid] = {
             isLoading$:new BehaviorSubject<boolean>(false),
-            value$: new BehaviorSubject<Answer[]>([])
+            value$: new BehaviorSubject<Reply[]>([])
         }
     }
     this.answers$[qid].value$.next([answer].concat(this.answers$[qid].value$.value));
     
   }
 
-  addOneQuestion(question: QuestionFromServer ) {
-    if (!this.answers$[question.id]) {
-        this.answers$[question.id] = {
+  addOneMessage(message: MessageFromServer ) {
+    this.utilsService.setMyProperty(message);
+    if (!this.answers$[message.id]) {
+        this.answers$[message.id] = {
           isLoading$:new BehaviorSubject<boolean>(false),
-          value$: new BehaviorSubject<Answer[]>([])
+          value$: new BehaviorSubject<Reply[]>([])
         }
     }
-    this.questions$.next([question].concat(this.questions$.value))
+    this.messages$.next([message].concat(this.messages$.value))
   }
 
 

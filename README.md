@@ -34,6 +34,12 @@ docker run --name es01 --net elastic -p 9200:9200 -it -m 1GB docker.elastic.co/e
 docker exec -it es01 /usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic
 ```
 
+To regenerate Kibana enrollment token use this command:
+
+```bash
+docker exec -it es01 /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana
+```
+
 6. Go into the server folder and run
 
 ```bash

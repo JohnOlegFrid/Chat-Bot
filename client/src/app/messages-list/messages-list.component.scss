@@ -1,0 +1,27 @@
+.list-wrapper{
+    display: flex;
+    flex-direction: column-reverse;
+    padding: 0 1% 5% 1%;
+    justify-content: end;
+    height: 100%;
+    overflow-y: auto;
+    gap:1.5em;
+    app-message {
+        display:flex;
+        &.my{
+            justify-content: right;
+            ::ng-deep .message-wrapper{
+                background-color: var(--message-my-color);
+                
+            }
+        }
+        &.other {
+            justify-content: left;
+            ::ng-deep .message-wrapper {
+                background-color: var(--message-other-color);
+                
+            }
+        }
+    }
+    
+}

@@ -1,0 +1,25 @@
+.message-wrapper{
+    padding: 0.2em 0.5em 0.2em 0.5em;
+    max-width:100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1em;
+    width:fit-content;
+    min-width: max-content;
+    border-radius: 0.5em;
+    p{
+        overflow-wrap: anywhere;
+        margin: 0;
+        width:fit-content;
+    }
+    .sender-name{
+        font-weight: bold;
+    }
+    .message-body{
+
+    }
+    .time{
+        color: var(--date-color);
+        font-size: x-small;
+    }
+}

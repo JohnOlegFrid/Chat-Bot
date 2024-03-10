@@ -1,0 +1,17 @@
+.dialog-wrapper{
+    display: flex;
+    flex-direction: row;
+    width:40em;
+    img{
+        width:40%;
+    }
+    .right{
+        display:flex;
+        flex-direction: column;
+        justify-content: center;
+        .title{
+            font-size: large;
+            line-height: 1.5em;
+        }
+    }
+}

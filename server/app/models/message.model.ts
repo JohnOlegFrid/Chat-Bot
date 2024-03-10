@@ -1,24 +1,23 @@
 import { Client } from '@elastic/elasticsearch';
 import { SearchResponse } from '@elastic/elasticsearch/lib/api/types';
 
-export interface QuestionDocument {
+export interface messageDocument {
     id?: string;
     text: string;
+    senderName:string;
     createdAt: Date;
 }
 
-export interface AnswerDocument {
-    questionId: string;
-    text: string;
-    createdAt?: Date;
+export interface ReplyDocument extends messageDocument {
+    replyToMessageId: string;
 }
 
-const QuestionIndex = "questions"
-const AnswersIndex = "answers"
+const MessageIndex = "messages"
+const AnswersIndex = "replies"
 
-class QaModel {
+class MessageModel {
 
-    private static instance: QaModel;
+    private static instance: MessageModel;
     private client: Client;
 
     private constructor() {
@@ -33,15 +32,15 @@ class QaModel {
                 rejectUnauthorized: false
             }
         });
-        this.createIndex(QuestionIndex).then();
+        this.createIndex(MessageIndex).then();
         this.createIndex(AnswersIndex).then();
     }
 
-    static getInstance(): QaModel {
-        if (!QaModel.instance) {
-            QaModel.instance = new QaModel();
+    static getInstance(): MessageModel {
+        if (!MessageModel.instance) {
+            MessageModel.instance = new MessageModel();
         }
-        return QaModel.instance;
+        return MessageModel.instance;
     }
 
     async indexExists(indexName: string): Promise<boolean> {
@@ -54,7 +53,7 @@ class QaModel {
         }
     }
 
-    async createIndex(indexName = QuestionIndex): Promise<void> {
+    async createIndex(indexName = MessageIndex): Promise<void> {
         try {
            
             const indexExists = await this.indexExists(indexName);
@@ -70,25 +69,27 @@ class QaModel {
         }
     }
 
-    async addQuestion(text: string): Promise<any> {
+    async addMessage(text: string,username:string): Promise<any> {
         try {
-            const document: QuestionDocument = {
+            const document: messageDocument = {
                 text,
+                senderName: username,
                 createdAt: new Date(),
             };
 
-            const response = await this.client.index({ index: QuestionIndex, body: document });
+            const response = await this.client.index({ index: MessageIndex, body: document });
             return Object.assign(document, {id:response._id});
         } catch (error) {
             throw error;
         }
     }
 
-    async addAnswer(questionId:string, text:string): Promise<any> {
+    async addReply(replyToMessageId:string, text:string, username:string): Promise<any> {
         try {
-            const document: AnswerDocument = {
-                questionId,
+            const document: ReplyDocument = {
+                replyToMessageId,
                 text,
+                senderName: username,
                 createdAt: new Date(),
             };
 
@@ -99,17 +100,17 @@ class QaModel {
         }
     }
 
-    async getQuestions(pageNumber: number, pageSize: number): Promise<QuestionDocument[]> {
+    async getMessages(pageNumber: number, pageSize: number): Promise<messageDocument[]> {
         try {
             const query = {
-                index: QuestionIndex,
+                index: MessageIndex,
                 size: pageSize,
                 from: (pageNumber - 1) * pageSize,
                 sort: [{ createdAt: { order: "desc" } }]
             };
 
             const ans:SearchResponse = await this.client.search(query);
-            const messages: QuestionDocument[] = ans.hits.hits.map((hit: any) => Object.assign(hit._source, {id: hit._id}));
+            const messages: messageDocument[] = ans.hits.hits.map((hit: any) => Object.assign(hit._source, {id: hit._id}));
             return messages;
         } catch (error) {
             console.error(error);
@@ -118,16 +119,16 @@ class QaModel {
     }
 
 
-    async getAnswersForQuestion(questionId: string): Promise<AnswerDocument[]> {
+    async getRepliesByMessageId(replyToMessageId: string): Promise<ReplyDocument[]> {
         try {
             const query = {
                 index: AnswersIndex,
-                questionId,
+                replyToMessageId,
                 sort: [{ createdAt: { order: "desc"} }],
             };
 
             const ans:SearchResponse = await this.client.search(query);
-            const answers: AnswerDocument[] = ans.hits.hits.map((hit: any) => hit._source);
+            const answers: ReplyDocument[] = ans.hits.hits.map((hit: any) => hit._source);
             return answers;
         } catch (error) {
             console.error(error);
@@ -135,10 +136,10 @@ class QaModel {
         }
     }
 
-    async findSimilarQuestions(text: string): Promise<QuestionDocument[]> {
+    async findSimilarMessages(text: string): Promise<messageDocument[]> {
         try {
             const query = {
-                index: QuestionIndex,
+                index: MessageIndex,
                 body: {
                     query: {
                         more_like_this: {
@@ -152,7 +153,7 @@ class QaModel {
             };
 
             const ans:SearchResponse = await this.client.search(query);
-            const similarMessages: QuestionDocument[] = ans.hits.hits.map((hit: any) => hit._source);
+            const similarMessages: messageDocument[] = ans.hits.hits.map((hit: any) => hit._source);
             return similarMessages;
         } catch (error) {
             console.error(error)
@@ -174,5 +175,5 @@ class QaModel {
     }
 }
 
-const qaModel = QaModel.getInstance();
-export default qaModel;
+const messageModel = MessageModel.getInstance();
+export default messageModel;

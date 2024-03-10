@@ -1,4 +1,6 @@
 <div class="main-wrapper">
-	<app-input class= "ask-question-input" (inputSubmitted) = "processNewQuestion($event)" label="Ask New Question"></app-input>
-	<app-questions-list></app-questions-list>
+	<div class="input-with-messages">
+		<app-messages-list></app-messages-list>
+		<app-input class="message-input" (inputSubmitted)="processNewMessage($event)" label="Ask New message"></app-input>
+	</div>
 </div>

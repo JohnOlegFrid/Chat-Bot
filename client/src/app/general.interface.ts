@@ -1,15 +1,17 @@
-export interface Question {
+export interface Message {
     text: string,
-    createdAt: Date,
-    answers: number
+    createdAt: string,
+    senderName?:string,
+    my?: boolean,
 }
 
-export interface QuestionFromServer extends Question {
+export enum LocalStorage{
+    username = 'username'
+}
+export interface MessageFromServer extends Message {
     id: string
 }
 
-export interface Answer {
-    questionId: string,
-    text: string,
-    createdAt: Date,
+export interface Reply extends Message{
+    replyToMessageId: string
 }

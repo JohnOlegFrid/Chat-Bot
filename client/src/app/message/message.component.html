@@ -1,0 +1,11 @@
+<div class="message-wrapper">
+	<p class="sender-name" *ngIf="message?.senderName">
+		{{message?.senderName}}
+	</p>
+	<p class="message-body">
+		{{message?.text}}
+	</p>
+	<p class="time" *ngIf="message?.createdAt">
+		{{utilsService.getTime(message!.createdAt)}}
+	</p>
+</div>

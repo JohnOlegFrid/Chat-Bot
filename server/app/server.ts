@@ -1,12 +1,16 @@
 
-import app from '.'
+import app from './app'
 const port = process.env.PORT
 import { Server as SocketIOServer } from 'socket.io';
-import qaModel, { QuestionDocument, AnswerDocument } from './models/qa.model'
-import qaRouter from './routers/qa.router';
+import messageModel, { messageDocument, ReplyDocument } from './models/message.model'
+import messageRouter from './routers/message.router';
 const server = app.listen(port)
 console.log("Server listening on port:", port);
 
+const NewMessageChanel = 'addMessage'
+const NewReplyChanel = 'addReplyToMessage'
+const NewMessagePublished = 'newMessagePublished'
+const NewReplyPublished = 'newReplyPublished'
 
 const io = new SocketIOServer(server, {
     cors: {
@@ -14,45 +18,47 @@ const io = new SocketIOServer(server, {
     }
 });
 
-app.use(qaRouter);
+app.use(messageRouter);
 
 io.on('connection', (socket) => {
     console.log('A user connected');
-    socket.on('addQuestion', async (text: string) => {
+    const senderName = socket.handshake.auth.username
+    console.log(senderName);
+    socket.on(NewMessageChanel, async (text: string) => {
         try {
-            const newQuestion = await qaModel.addQuestion(text);
-            io.sockets.emit("newQuestionPublished", newQuestion);
+            const newmessage = await messageModel.addMessage(text, senderName);
+            io.sockets.emit(NewMessagePublished, newmessage);
         } catch(e){ 
             console.error(e);
         }
         
     });
 
-    socket.on('addAnswer', async (questionId:string, text:string ) => {
+    socket.on(NewReplyChanel, async (messageId:string, text:string ) => {
         
         try {
-            const newAnswer = await qaModel.addAnswer(questionId, text);
-            io.sockets.emit("newAnswerPublished", newAnswer);
+            const newAnswer = await messageModel.addReply(messageId, text, senderName);
+            io.sockets.emit(NewReplyPublished, newAnswer);
         } catch(e){ 
             console.error(e);
         }
         
     });
 
-    socket.on('getQuestions', async (page: number, pageSize: number) => {
+    socket.on('getMessages', async (page: number, pageSize: number) => {
         try {
-            const questions = await qaModel.getQuestions(page, pageSize);
-            socket.emit("getQuestions", questions);
+            const messages = await messageModel.getMessages(page, pageSize);
+            socket.emit("postMessages", messages);
         } catch(e){ 
             console.error(e);
         }
         
     });
 
-    socket.on('getAnswersForQuestionId', async (questionId: string) => {
+    socket.on('getRepliesByMessageId', async (messageId: string) => {
         try {
-            const answers = await qaModel.getAnswersForQuestion(questionId);
-            socket.emit("getQuestions", answers);
+            const replies = await messageModel.getRepliesByMessageId(messageId);
+            socket.emit("postMessages", replies);
         } catch(e){ 
             console.error(e);
         }

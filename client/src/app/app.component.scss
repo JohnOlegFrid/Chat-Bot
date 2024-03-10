@@ -3,13 +3,22 @@
     flex-direction: column;
     align-items: center;
     height:100%;
-    .ask-question-input {
-        margin: 3em 0 3em 0;
-        width: 90%;
-    }
-    app-questions-list {
-        width: 90%;
-        margin-bottom: 5%;
-        overflow-y: scroll;
+    width: 100%;
+    .input-with-messages{
+        width:50%;
+        height: 100%;
+        display:flex;
+        flex-direction: column;
+        justify-content: space-between;
+        .message-input {
+            margin: 1% 0;
+            width: 100%;
+        }
+        app-messages-list {
+            width: 100%;
+            height:85%;
+            padding-top:5%;
+
+        }
     }
 }
